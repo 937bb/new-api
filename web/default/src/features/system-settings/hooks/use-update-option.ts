@@ -25,6 +25,14 @@ import type { UpdateOptionRequest } from '../types'
 // Configuration keys that require status refresh
 const STATUS_RELATED_KEYS = [
   'theme.frontend',
+  'SystemName',
+  'Logo',
+  'ServerAddress',
+  'SeoTitle',
+  'SeoDescription',
+  'SeoKeywords',
+  'SeoSiteUrl',
+  'SeoImage',
   'HeaderNavModules',
   'SidebarModulesAdmin',
   'Notice',

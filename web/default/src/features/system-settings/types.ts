@@ -61,6 +61,11 @@ export type SiteSettings = {
   Notice: string
   SystemName: string
   Logo: string
+  SeoTitle: string
+  SeoDescription: string
+  SeoKeywords: string
+  SeoSiteUrl: string
+  SeoImage: string
   Footer: string
   About: string
   HomePageContent: string

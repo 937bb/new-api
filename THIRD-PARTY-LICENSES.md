@@ -112,6 +112,7 @@ Transitive dependencies should be audited before a final external release.
 | web/default | production  | npm       | `streamdown`                                          | `2.5.0`                              | Apache-2.0                                         |
 | web/default | production  | npm       | `tailwind-merge`                                      | `3.5.0`                              | MIT                                                |
 | web/default | production  | npm       | `tailwindcss`                                         | `4.2.2`                              | MIT                                                |
+| web/default | production  | npm       | `three`                                               | `0.184.0`                            | MIT                                                |
 | web/default | production  | npm       | `tokenlens`                                           | `1.3.1`                              | MIT                                                |
 | web/default | production  | npm       | `tw-animate-css`                                      | `1.4.0`                              | MIT                                                |
 | web/default | production  | npm       | `use-stick-to-bottom`                                 | `1.1.3`                              | MIT                                                |
@@ -141,6 +142,8 @@ Transitive dependencies should be audited before a final external release.
 | web/default | development | npm       | `shadcn`                                              | `3.8.5`                              | MIT                                                |
 | web/default | development | npm       | `typescript`                                          | `5.9.3`                              | Apache-2.0                                         |
 | web/default | development | npm       | `typescript-eslint`                                   | `8.58.1`                             | MIT                                                |
+| web/default | production  | asset     | `RobotExpressive.glb`                                 | Three.js example model               | CC0-1.0                                            |
+| web/default | production  | asset     | `Fox.glb`                                             | Khronos glTF Sample Models           | CC0-1.0; CC-BY-4.0 rigging and animation          |
 | web/classic | production  | npm       | `@douyinfe/semi-icons`                                | `2.72.2`                             | MIT                                                |
 | web/classic | production  | npm       | `@douyinfe/semi-ui`                                   | `2.72.2`                             | MIT                                                |
 | web/classic | production  | npm       | `@lobehub/icons`                                      | `2.1.0`                              | MIT                                                |
@@ -358,6 +361,24 @@ https://openfontlicense.org/open-font-license-official-text/
 When distributing font files, preserve the OFL license text, copyright notices,
 and reserved font name restrictions supplied by the upstream font project.
 
+### CC0-1.0
+
+CC0 1.0 Universal public domain dedication:
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Assets listed as CC0-1.0 may be copied, modified, and distributed without
+additional permission. Preserve upstream attribution when it is already present
+in source metadata or project documentation.
+
+### CC-BY-4.0
+
+Creative Commons Attribution 4.0 International:
+https://creativecommons.org/licenses/by/4.0/
+
+The `Fox.glb` rigging and animation are attributed to @tomkranis on Sketchfab,
+with glTF conversion by @AsoboStudio and @scurest. The low-poly fox model is by
+PixelMannen. Preserve this attribution when redistributing the frontend bundle.
+
 ### Proprietary/Internal - owned by project maintainer
 
 This dependency is owned by the project maintainer and is not treated as a third-party open source dependency for this review.
@@ -372,4 +393,3 @@ this software, either in source code form or as a compiled binary, for any
 purpose, commercial or non-commercial, and by any means.
 
 For more information, please refer to https://unlicense.org/
-

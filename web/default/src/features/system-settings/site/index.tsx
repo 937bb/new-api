@@ -29,6 +29,13 @@ const defaultSiteSettings: SiteSettings = {
   Notice: '',
   SystemName: 'New API',
   Logo: '',
+  SeoTitle: 'ModelPort Global',
+  SeoDescription:
+    'ModelPort Global provides a unified AI API gateway for resilient model routing, usage management, billing, and secure operations.',
+  SeoKeywords:
+    'AI API gateway, model routing, model proxy, OpenAI API, Claude API, Gemini API, AI billing',
+  SeoSiteUrl: 'http://www.modelportglobal.com/',
+  SeoImage: '',
   Footer: '',
   About: '',
   HomePageContent: '',

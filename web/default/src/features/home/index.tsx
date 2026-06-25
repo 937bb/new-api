@@ -61,13 +61,15 @@ export function Home() {
   }
 
   return (
-    <PublicLayout showMainContainer={false}>
+    <main className='overflow-x-hidden'>
       <Hero isAuthenticated={isAuthenticated} />
-      <Stats />
-      <Features />
-      <HowItWorks />
-      <CTA isAuthenticated={isAuthenticated} />
-      <Footer />
-    </PublicLayout>
+      <div className='bg-background text-foreground'>
+        <Stats />
+        <Features />
+        <HowItWorks />
+        <CTA isAuthenticated={isAuthenticated} />
+        <Footer />
+      </div>
+    </main>
   )
 }

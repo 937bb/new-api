@@ -58,6 +58,11 @@ const _systemInfoSchema = z.object({
   SystemName: z.string().min(1),
   ServerAddress: z.string().optional(),
   Logo: z.string().url().optional().or(z.literal('')),
+  SeoTitle: z.string().optional(),
+  SeoDescription: z.string().optional(),
+  SeoKeywords: z.string().optional(),
+  SeoSiteUrl: z.string().url().optional().or(z.literal('')),
+  SeoImage: z.string().url().optional().or(z.literal('')),
   Footer: z.string().optional(),
   About: z.string().optional(),
   HomePageContent: z.string().optional(),
@@ -90,6 +95,11 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
     SystemName: normalizeValue(defaultValues.SystemName),
     ServerAddress: normalizeValue(defaultValues.ServerAddress),
     Logo: normalizeValue(defaultValues.Logo),
+    SeoTitle: normalizeValue(defaultValues.SeoTitle),
+    SeoDescription: normalizeValue(defaultValues.SeoDescription),
+    SeoKeywords: normalizeValue(defaultValues.SeoKeywords),
+    SeoSiteUrl: normalizeValue(defaultValues.SeoSiteUrl),
+    SeoImage: normalizeValue(defaultValues.SeoImage),
     Footer: normalizeValue(defaultValues.Footer),
     About: normalizeValue(defaultValues.About),
     HomePageContent: normalizeValue(defaultValues.HomePageContent),
@@ -108,6 +118,11 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
     }),
     ServerAddress: z.string().optional(),
     Logo: z.string().url().optional().or(z.literal('')),
+    SeoTitle: z.string().optional(),
+    SeoDescription: z.string().optional(),
+    SeoKeywords: z.string().optional(),
+    SeoSiteUrl: z.string().url().optional().or(z.literal('')),
+    SeoImage: z.string().url().optional().or(z.literal('')),
     Footer: z.string().optional(),
     About: z.string().optional(),
     HomePageContent: z.string().optional(),
@@ -255,6 +270,118 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name='SeoTitle'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('SEO Title')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder='ModelPort Global' {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Title used by browsers and search engines. Leave empty to use the system name.'
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='SeoSiteUrl'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Canonical Site URL')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='https://www.example.com/'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Public homepage URL used for canonical and social metadata.'
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='SeoKeywords'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('SEO Keywords')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t(
+                          'AI API gateway, model routing, model proxy'
+                        )}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('Comma-separated keywords for search metadata.')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='SeoImage'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('SEO Share Image URL')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='https://www.example.com/og-image.png'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Public image URL used for Open Graph and Twitter previews.'
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <SettingsFormGridItem span='full'>
+                <FormField
+                  control={form.control}
+                  name='SeoDescription'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('SEO Description')}</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder={t(
+                            'Unified AI API gateway for resilient model routing and secure operations.'
+                          )}
+                          rows={3}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t(
+                          'Short summary used by search engines and social previews.'
+                        )}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </SettingsFormGridItem>
 
               <FormField
                 control={form.control}

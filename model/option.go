@@ -70,6 +70,11 @@ func InitOptionMap() {
 	common.OptionMap["Footer"] = common.Footer
 	common.OptionMap["SystemName"] = common.SystemName
 	common.OptionMap["Logo"] = common.Logo
+	common.OptionMap["SeoTitle"] = "ModelPort Global"
+	common.OptionMap["SeoDescription"] = "ModelPort Global provides a unified AI API gateway for resilient model routing, usage management, billing, and secure operations."
+	common.OptionMap["SeoKeywords"] = "AI API gateway, model routing, model proxy, OpenAI API, Claude API, Gemini API, AI billing"
+	common.OptionMap["SeoSiteUrl"] = "http://www.modelportglobal.com/"
+	common.OptionMap["SeoImage"] = ""
 	common.OptionMap["ServerAddress"] = ""
 	common.OptionMap["WorkerUrl"] = system_setting.WorkerUrl
 	common.OptionMap["WorkerValidKey"] = system_setting.WorkerValidKey

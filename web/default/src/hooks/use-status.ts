@@ -19,6 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { useQuery } from '@tanstack/react-query'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 import { getStatus } from '@/lib/api'
+import { applySeoToDom } from '@/lib/seo'
 import type { SystemStatus } from '@/features/auth/types'
 import { mapStatusDataToConfig } from './use-system-config'
 
@@ -44,6 +45,7 @@ export function useStatus() {
         if (status) {
           const { setConfig } = useSystemConfigStore.getState()
           setConfig(mapStatusDataToConfig(status))
+          applySeoToDom(status)
         }
       } catch (err) {
         if (import.meta.env.DEV) {

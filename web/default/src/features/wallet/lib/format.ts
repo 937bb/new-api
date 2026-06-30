@@ -62,6 +62,17 @@ export function formatCurrency(amount: number | string): string {
 }
 
 /**
+ * Format a crypto amount with an explicit token symbol.
+ */
+export function formatCryptoAmount(
+  amount: number | string,
+  token: string = 'USDT'
+): string {
+  const formatted = formatCurrency(amount)
+  return formatted === '-' ? formatted : `${formatted} ${token.toUpperCase()}`
+}
+
+/**
  * Get discount label for display (e.g., "20% OFF")
  */
 export function getDiscountLabel(discount: number): string {
@@ -89,6 +100,33 @@ export function calculatePresetPricing(
 
   return {
     displayValue,
+    originalPrice,
+    actualPrice,
+    savedAmount,
+    hasDiscount,
+  }
+}
+
+/**
+ * Calculate pricing details for USDT / EPUSDT preset amounts.
+ *
+ * USDT payments are created in crypto units and should not use the generic
+ * fiat recharge price (`Price`, usually CNY per USD). The optional unit price
+ * is the admin-configured USD-to-USDT multiplier from the USDT gateway.
+ */
+export function calculateUsdtPresetPricing(
+  presetValue: number,
+  unitPrice: number,
+  discount: number
+) {
+  const safeUnitPrice = Number.isFinite(unitPrice) && unitPrice > 0 ? unitPrice : 1
+  const originalPrice = presetValue * safeUnitPrice
+  const actualPrice = originalPrice * discount
+  const savedAmount = originalPrice - actualPrice
+  const hasDiscount = discount < 1.0
+
+  return {
+    displayValue: presetValue,
     originalPrice,
     actualPrice,
     savedAmount,

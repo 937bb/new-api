@@ -31,7 +31,12 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { DEFAULT_DISCOUNT_RATE } from '../../constants'
-import { formatCurrency, getPaymentIcon } from '../../lib'
+import {
+  formatCryptoAmount,
+  formatCurrency,
+  getPaymentIcon,
+  isEpusdtPayment,
+} from '../../lib'
 import type { PaymentMethod } from '../../types'
 
 interface PaymentConfirmDialogProps {
@@ -60,6 +65,7 @@ export function PaymentConfirmDialog({
   usdExchangeRate = 1,
 }: PaymentConfirmDialogProps) {
   const { t } = useTranslation()
+  const isUsdtPayment = isEpusdtPayment(paymentMethod?.type || '')
   const hasDiscount = discountRate > 0 && discountRate < 1 && paymentAmount > 0
   const originalAmount = hasDiscount ? paymentAmount / discountRate : 0
   const discountAmount = hasDiscount ? originalAmount - paymentAmount : 0
@@ -99,11 +105,15 @@ export function PaymentConfirmDialog({
             ) : (
               <div className='flex items-baseline gap-2'>
                 <span className='text-2xl font-semibold'>
-                  {formatCurrency(paymentAmount)}
+                  {isUsdtPayment
+                    ? formatCryptoAmount(paymentAmount)
+                    : formatCurrency(paymentAmount)}
                 </span>
                 {hasDiscount && (
                   <span className='text-muted-foreground text-sm line-through'>
-                    {formatCurrency(originalAmount)}
+                    {isUsdtPayment
+                      ? formatCryptoAmount(originalAmount)
+                      : formatCurrency(originalAmount)}
                   </span>
                 )}
               </div>
@@ -115,7 +125,9 @@ export function PaymentConfirmDialog({
               <div className='flex items-center justify-between text-sm'>
                 <span className='text-muted-foreground'>{t('You save')}</span>
                 <span className='font-semibold text-green-600'>
-                  {formatCurrency(discountAmount)}
+                  {isUsdtPayment
+                    ? formatCryptoAmount(discountAmount)
+                    : formatCurrency(discountAmount)}
                 </span>
               </div>
             </div>

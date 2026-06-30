@@ -36,10 +36,13 @@ import {
 } from '@/components/ui/tooltip'
 import {
   formatCurrency,
+  formatCryptoAmount,
   getDiscountLabel,
   getPaymentIcon,
   getMinTopupAmount,
   calculatePresetPricing,
+  calculateUsdtPresetPricing,
+  isEpusdtPayment,
 } from '../lib'
 import type {
   PaymentMethod,
@@ -78,6 +81,7 @@ interface RechargeFormCardProps {
   waffoMinTopup?: number
   onWaffoMethodSelect?: (method: WaffoPayMethod, index: number) => void
   enableWaffoPancakeTopup?: boolean
+  currentPaymentType?: string
 }
 
 export function RechargeFormCard({
@@ -108,9 +112,14 @@ export function RechargeFormCard({
   waffoMinTopup,
   onWaffoMethodSelect,
   enableWaffoPancakeTopup,
+  currentPaymentType,
 }: RechargeFormCardProps) {
   const { t } = useTranslation()
   const [localAmount, setLocalAmount] = useState(topupAmount.toString())
+  const paymentMethods = topupInfo?.pay_methods || []
+  const effectivePaymentType = currentPaymentType || paymentMethods[0]?.type || ''
+  const isUsdtPayment = isEpusdtPayment(effectivePaymentType)
+  const usdtUnitPrice = topupInfo?.epusdt_unit_price || 1
 
   useEffect(() => {
     setLocalAmount(topupAmount.toString())
@@ -131,8 +140,7 @@ export function RechargeFormCard({
     enableWaffoPancakeTopup ||
     topupInfo?.enable_epusdt_topup
   const hasAnyTopup = hasConfigurableTopup || enableCreemTopup
-  const hasStandardPaymentMethods =
-    Array.isArray(topupInfo?.pay_methods) && topupInfo.pay_methods.length > 0
+  const hasStandardPaymentMethods = paymentMethods.length > 0
   const hasWaffoPaymentMethods =
     Array.isArray(waffoPayMethods) && waffoPayMethods.length > 0
   const minTopup = getMinTopupAmount(topupInfo)
@@ -228,12 +236,18 @@ export function RechargeFormCard({
                         actualPrice,
                         savedAmount,
                         hasDiscount,
-                      } = calculatePresetPricing(
-                        preset.value,
-                        priceRatio,
-                        discount,
-                        usdExchangeRate
-                      )
+                      } = isUsdtPayment
+                        ? calculateUsdtPresetPricing(
+                            preset.value,
+                            usdtUnitPrice,
+                            discount
+                          )
+                        : calculatePresetPricing(
+                            preset.value,
+                            priceRatio,
+                            discount,
+                            usdExchangeRate
+                          )
                       return (
                         <Button
                           key={index}
@@ -257,11 +271,21 @@ export function RechargeFormCard({
                             )}
                           </div>
                           <div className='text-muted-foreground mt-1.5 w-full text-xs sm:mt-2'>
-                            Pay {formatCurrency(actualPrice)}
+                            {isUsdtPayment
+                              ? t('Pay {{amount}} USDT', {
+                                  amount: formatCurrency(actualPrice),
+                                })
+                              : t('Pay {{amount}}', {
+                                  amount: formatCurrency(actualPrice),
+                                })}
                             {hasDiscount && savedAmount > 0 && (
                               <span className='text-green-600'>
-                                {' '}
-                                • Save {formatCurrency(savedAmount)}
+                                {' · '}
+                                {t('Save {{amount}}', {
+                                  amount: isUsdtPayment
+                                    ? formatCryptoAmount(savedAmount)
+                                    : formatCurrency(savedAmount),
+                                })}
                               </span>
                             )}
                           </div>
@@ -291,13 +315,17 @@ export function RechargeFormCard({
                   />
                   <div className='bg-muted/30 flex min-h-9 items-center justify-between gap-2 rounded-md border px-3 lg:min-w-52'>
                     <span className='text-muted-foreground truncate text-xs'>
-                      {t('Amount to pay:')}
+                      {isUsdtPayment
+                        ? t('USDT amount to pay:')
+                        : t('Amount to pay:')}
                     </span>
                     {calculating ? (
                       <Skeleton className='h-5 w-16' />
                     ) : (
                       <span className='text-sm font-semibold'>
-                        {formatCurrency(paymentAmount)}
+                        {isUsdtPayment
+                          ? formatCryptoAmount(paymentAmount)
+                          : formatCurrency(paymentAmount)}
                       </span>
                     )}
                   </div>
@@ -310,7 +338,7 @@ export function RechargeFormCard({
                 </Label>
                 {hasStandardPaymentMethods ? (
                   <div className='grid grid-cols-2 gap-1.5 sm:gap-3 lg:grid-cols-3'>
-                    {topupInfo?.pay_methods?.map((method) => {
+                    {paymentMethods.map((method) => {
                       const minTopup = method.min_topup || 0
                       const disabled = minTopup > topupAmount
 

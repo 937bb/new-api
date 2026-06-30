@@ -169,6 +169,8 @@ export interface TopupInfo {
   enable_epusdt_topup?: boolean
   /** Minimum topup amount for EPUSDT / USDT */
   epusdt_min_topup?: number
+  /** USD-to-USDT multiplier for EPUSDT / USDT */
+  epusdt_unit_price?: number
   /** Whether redemption code usage is enabled */
   enable_redemption?: boolean
   /** Whether compliance confirmation has been completed */

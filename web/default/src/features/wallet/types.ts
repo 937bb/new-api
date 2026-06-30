@@ -59,6 +59,21 @@ export type WaffoPancakePaymentResponse = ApiResponse<
     }
   | string
 >
+export type EpusdtPaymentResponse = ApiResponse<
+  | {
+      payment_url?: string
+      trade_no?: string
+      epusdt_trade_id?: string
+      qr_code?: string
+      amount?: string | number
+      actual_amount?: string | number
+      token?: string
+      network?: string
+      receive_address?: string
+      expiration_time?: number | string
+    }
+  | string
+>
 
 /**
  * Creem product configuration
@@ -150,6 +165,10 @@ export interface TopupInfo {
   enable_waffo_pancake_topup?: boolean
   /** Minimum topup amount for Waffo Pancake */
   waffo_pancake_min_topup?: number
+  /** Whether EPUSDT / USDT topup is enabled */
+  enable_epusdt_topup?: boolean
+  /** Minimum topup amount for EPUSDT / USDT */
+  epusdt_min_topup?: number
   /** Whether redemption code usage is enabled */
   enable_redemption?: boolean
   /** Whether compliance confirmation has been completed */

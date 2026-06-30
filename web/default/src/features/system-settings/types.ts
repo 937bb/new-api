@@ -264,6 +264,19 @@ export type BillingSettings = {
   WaffoPancakeMerchantID: string
   WaffoPancakePrivateKey: string
   WaffoPancakeReturnURL: string
+  EpusdtEnabled: boolean
+  EpusdtURL: string
+  EpusdtPid: string
+  EpusdtToken: string
+  EpusdtCurrency: string
+  EpusdtTokenSymbol: string
+  EpusdtNetwork: string
+  EpusdtUnitPrice: number
+  EpusdtMinTopUp: number
+  EpusdtMaxTopUp: number
+  EpusdtNotifyURL: string
+  EpusdtReturnURL: string
+  EpusdtLegacyAPI: boolean
   // Bound by the operator through the catalog flow in the admin Pancake
   // section (saved via /api/option/waffo-pancake/save).
   WaffoPancakeStoreID: string

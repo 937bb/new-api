@@ -92,6 +92,21 @@ func isWaffoPancakeWebhookEnabled() bool {
 	return isWaffoPancakeTopUpEnabled()
 }
 
+func isEpusdtTopUpEnabled() bool {
+	if !isPaymentComplianceConfirmed() {
+		return false
+	}
+	return isEpusdtWebhookConfigured()
+}
+
+func isEpusdtWebhookConfigured() bool {
+	return setting.IsEpusdtEnabled()
+}
+
+func isEpusdtWebhookEnabled() bool {
+	return isEpusdtTopUpEnabled()
+}
+
 func isEpayTopUpEnabled() bool {
 	if !isPaymentComplianceConfirmed() {
 		return false

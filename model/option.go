@@ -119,6 +119,19 @@ func InitOptionMap() {
 	common.OptionMap["WaffoPancakeMinTopUp"] = strconv.Itoa(setting.WaffoPancakeMinTopUp)
 	common.OptionMap["WaffoPancakeStoreID"] = setting.WaffoPancakeStoreID
 	common.OptionMap["WaffoPancakeProductID"] = setting.WaffoPancakeProductID
+	common.OptionMap["EpusdtEnabled"] = strconv.FormatBool(setting.EpusdtEnabled)
+	common.OptionMap["EpusdtURL"] = setting.EpusdtURL
+	common.OptionMap["EpusdtPid"] = setting.EpusdtPid
+	common.OptionMap["EpusdtToken"] = setting.EpusdtToken
+	common.OptionMap["EpusdtCurrency"] = setting.EpusdtCurrency
+	common.OptionMap["EpusdtTokenSymbol"] = setting.EpusdtTokenSymbol
+	common.OptionMap["EpusdtNetwork"] = setting.EpusdtNetwork
+	common.OptionMap["EpusdtUnitPrice"] = strconv.FormatFloat(setting.EpusdtUnitPrice, 'f', -1, 64)
+	common.OptionMap["EpusdtMinTopUp"] = strconv.Itoa(setting.EpusdtMinTopUp)
+	common.OptionMap["EpusdtMaxTopUp"] = strconv.Itoa(setting.EpusdtMaxTopUp)
+	common.OptionMap["EpusdtNotifyURL"] = setting.EpusdtNotifyURL
+	common.OptionMap["EpusdtReturnURL"] = setting.EpusdtReturnURL
+	common.OptionMap["EpusdtLegacyAPI"] = strconv.FormatBool(setting.EpusdtLegacyAPI)
 	common.OptionMap["TopupGroupRatio"] = common.TopupGroupRatio2JSONString()
 	common.OptionMap["Chats"] = setting.Chats2JsonString()
 	common.OptionMap["AutoGroups"] = setting.AutoGroups2JsonString()
@@ -467,6 +480,32 @@ func updateOptionMap(key string, value string) (err error) {
 		setting.WaffoPancakeUnitPrice, _ = strconv.ParseFloat(value, 64)
 	case "WaffoPancakeMinTopUp":
 		setting.WaffoPancakeMinTopUp, _ = strconv.Atoi(value)
+	case "EpusdtEnabled":
+		setting.EpusdtEnabled = value == "true"
+	case "EpusdtURL":
+		setting.EpusdtURL = strings.TrimRight(value, "/")
+	case "EpusdtPid":
+		setting.EpusdtPid = strings.TrimSpace(value)
+	case "EpusdtToken":
+		setting.EpusdtToken = value
+	case "EpusdtCurrency":
+		setting.EpusdtCurrency = strings.ToLower(strings.TrimSpace(value))
+	case "EpusdtTokenSymbol":
+		setting.EpusdtTokenSymbol = strings.ToLower(strings.TrimSpace(value))
+	case "EpusdtNetwork":
+		setting.EpusdtNetwork = strings.ToLower(strings.TrimSpace(value))
+	case "EpusdtUnitPrice":
+		setting.EpusdtUnitPrice, _ = strconv.ParseFloat(value, 64)
+	case "EpusdtMinTopUp":
+		setting.EpusdtMinTopUp, _ = strconv.Atoi(value)
+	case "EpusdtMaxTopUp":
+		setting.EpusdtMaxTopUp, _ = strconv.Atoi(value)
+	case "EpusdtNotifyURL":
+		setting.EpusdtNotifyURL = strings.TrimSpace(value)
+	case "EpusdtReturnURL":
+		setting.EpusdtReturnURL = strings.TrimSpace(value)
+	case "EpusdtLegacyAPI":
+		setting.EpusdtLegacyAPI = value == "true"
 	case "TopupGroupRatio":
 		err = common.UpdateTopupGroupRatioByJSONString(value)
 	case "GitHubClientId":

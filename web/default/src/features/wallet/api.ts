@@ -38,6 +38,7 @@ import type {
   WaffoPaymentResponse,
   WaffoPancakePaymentRequest,
   WaffoPancakePaymentResponse,
+  EpusdtPaymentResponse,
 } from './types'
 
 // ============================================================================
@@ -157,12 +158,36 @@ export async function calculateWaffoPancakeAmount(
 }
 
 /**
+ * Calculate payment amount for EPUSDT / USDT payment
+ */
+export async function calculateEpusdtAmount(
+  request: AmountRequest
+): Promise<AmountResponse> {
+  const res = await api.post('/api/user/epusdt/amount', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
  * Request Waffo Pancake payment
  */
 export async function requestWaffoPancakePayment(
   request: WaffoPancakePaymentRequest
 ): Promise<WaffoPancakePaymentResponse> {
   const res = await api.post('/api/user/waffo-pancake/pay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
+ * Request EPUSDT / USDT payment
+ */
+export async function requestEpusdtPayment(
+  request: PaymentRequest
+): Promise<EpusdtPaymentResponse> {
+  const res = await api.post('/api/user/epusdt/pay', request, {
     skipBusinessError: true,
   } as Record<string, unknown>)
   return res.data

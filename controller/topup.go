@@ -95,12 +95,35 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
+	// 如果启用了 EPUSDT 支付，添加到支付方法列表
+	enableEpusdt := isEpusdtTopUpEnabled()
+	if enableEpusdt {
+		hasEpusdt := false
+		for _, method := range payMethods {
+			if method["type"] == model.PaymentMethodUSDT {
+				hasEpusdt = true
+				break
+			}
+		}
+
+		if !hasEpusdt {
+			epusdtMethod := map[string]string{
+				"name":      "USDT (TRC20)",
+				"type":      model.PaymentMethodUSDT,
+				"color":     "rgba(var(--semi-green-5), 1)",
+				"min_topup": strconv.Itoa(setting.EpusdtMinTopUp),
+			}
+			payMethods = append(payMethods, epusdtMethod)
+		}
+	}
+
 	data := gin.H{
 		"enable_online_topup":              isEpayTopUpEnabled(),
 		"enable_stripe_topup":              isStripeTopUpEnabled(),
 		"enable_creem_topup":               isCreemTopUpEnabled(),
 		"enable_waffo_topup":               enableWaffo,
 		"enable_waffo_pancake_topup":       enableWaffoPancake,
+		"enable_epusdt_topup":              enableEpusdt,
 		"enable_redemption":                complianceConfirmed,
 		"payment_compliance_confirmed":     complianceConfirmed,
 		"payment_compliance_terms_version": operation_setting.CurrentComplianceTermsVersion,
@@ -116,6 +139,7 @@ func GetTopUpInfo(c *gin.Context) {
 		"stripe_min_topup":        setting.StripeMinTopUp,
 		"waffo_min_topup":         setting.WaffoMinTopUp,
 		"waffo_pancake_min_topup": setting.WaffoPancakeMinTopUp,
+		"epusdt_min_topup":        setting.EpusdtMinTopUp,
 		"amount_options":          operation_setting.GetPaymentSetting().AmountOptions,
 		"discount":                operation_setting.GetPaymentSetting().AmountDiscount,
 		"topup_link":              common.TopUpLink,
@@ -508,4 +532,26 @@ func AdminCompleteTopUp(c *gin.Context) {
 		return
 	}
 	common.ApiSuccess(c, nil)
+}
+
+// RequestEpusdtAmount handles USDT amount calculation requests
+func RequestEpusdtAmount(c *gin.Context) {
+	var req AmountRequest
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "参数错误"})
+		return
+	}
+	usdtAdaptor.RequestAmount(c, &USDTPayRequest{Amount: req.Amount})
+}
+
+// RequestEpusdtPay handles USDT payment requests
+func RequestEpusdtPay(c *gin.Context) {
+	var req USDTPayRequest
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "参数错误"})
+		return
+	}
+	usdtAdaptor.RequestPay(c, &req)
 }

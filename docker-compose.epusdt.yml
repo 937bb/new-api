@@ -1,0 +1,9 @@
+﻿services:
+  epusdt:
+    image: gmwallet/epusdt:latest
+    container_name: epusdt
+    restart: always
+    volumes:
+      - ./env:/app/.env
+    ports:
+      - "8000:8000"

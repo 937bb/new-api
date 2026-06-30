@@ -78,6 +78,12 @@ import {
   type WaffoSettingsValues,
 } from './waffo-settings-section'
 
+const optionalHttpUrlSchema = z.string().refine((value) => {
+  const trimmed = value.trim()
+  if (!trimmed) return true
+  return /^https?:\/\//.test(trimmed)
+}, 'Provide a valid URL starting with http:// or https://')
+
 const paymentSchema = z.object({
   PayAddress: z.string().refine((value) => {
     const trimmed = value.trim()
@@ -142,6 +148,19 @@ const paymentSchema = z.object({
       })
     }
   }),
+  EpusdtEnabled: z.boolean(),
+  EpusdtURL: optionalHttpUrlSchema,
+  EpusdtPid: z.string(),
+  EpusdtToken: z.string(),
+  EpusdtCurrency: z.string(),
+  EpusdtTokenSymbol: z.string(),
+  EpusdtNetwork: z.string(),
+  EpusdtUnitPrice: z.coerce.number().min(0),
+  EpusdtMinTopUp: z.coerce.number().min(0),
+  EpusdtMaxTopUp: z.coerce.number().min(0),
+  EpusdtNotifyURL: optionalHttpUrlSchema,
+  EpusdtReturnURL: optionalHttpUrlSchema,
+  EpusdtLegacyAPI: z.boolean(),
   WaffoEnabled: z.boolean(),
   WaffoApiKey: z.string(),
   WaffoPrivateKey: z.string(),
@@ -419,6 +438,22 @@ export function PaymentSettingsSection({
       CreemWebhookSecret: values.CreemWebhookSecret.trim(),
       CreemTestMode: values.CreemTestMode,
       CreemProducts: values.CreemProducts.trim(),
+      EpusdtEnabled: values.EpusdtEnabled,
+      EpusdtURL: removeTrailingSlash(values.EpusdtURL || ''),
+      EpusdtPid: (values.EpusdtPid || '').trim() || '1000',
+      EpusdtToken: (values.EpusdtToken || '').trim(),
+      EpusdtCurrency:
+        (values.EpusdtCurrency || '').trim().toLowerCase() || 'usd',
+      EpusdtTokenSymbol:
+        (values.EpusdtTokenSymbol || '').trim().toLowerCase() || 'usdt',
+      EpusdtNetwork:
+        (values.EpusdtNetwork || '').trim().toLowerCase() || 'tron',
+      EpusdtUnitPrice: values.EpusdtUnitPrice,
+      EpusdtMinTopUp: values.EpusdtMinTopUp,
+      EpusdtMaxTopUp: values.EpusdtMaxTopUp,
+      EpusdtNotifyURL: removeTrailingSlash(values.EpusdtNotifyURL || ''),
+      EpusdtReturnURL: removeTrailingSlash(values.EpusdtReturnURL || ''),
+      EpusdtLegacyAPI: values.EpusdtLegacyAPI,
       WaffoEnabled: values.WaffoEnabled,
       WaffoSandbox: values.WaffoSandbox,
       WaffoMerchantId: values.WaffoMerchantId.trim(),
@@ -464,6 +499,27 @@ export function PaymentSettingsSection({
       CreemWebhookSecret: initialRef.current.CreemWebhookSecret.trim(),
       CreemTestMode: initialRef.current.CreemTestMode,
       CreemProducts: initialRef.current.CreemProducts.trim(),
+      EpusdtEnabled: initialRef.current.EpusdtEnabled,
+      EpusdtURL: removeTrailingSlash(initialRef.current.EpusdtURL || ''),
+      EpusdtPid: (initialRef.current.EpusdtPid || '').trim() || '1000',
+      EpusdtToken: (initialRef.current.EpusdtToken || '').trim(),
+      EpusdtCurrency:
+        (initialRef.current.EpusdtCurrency || '').trim().toLowerCase() || 'usd',
+      EpusdtTokenSymbol:
+        (initialRef.current.EpusdtTokenSymbol || '').trim().toLowerCase() ||
+        'usdt',
+      EpusdtNetwork:
+        (initialRef.current.EpusdtNetwork || '').trim().toLowerCase() || 'tron',
+      EpusdtUnitPrice: initialRef.current.EpusdtUnitPrice,
+      EpusdtMinTopUp: initialRef.current.EpusdtMinTopUp,
+      EpusdtMaxTopUp: initialRef.current.EpusdtMaxTopUp,
+      EpusdtNotifyURL: removeTrailingSlash(
+        initialRef.current.EpusdtNotifyURL || ''
+      ),
+      EpusdtReturnURL: removeTrailingSlash(
+        initialRef.current.EpusdtReturnURL || ''
+      ),
+      EpusdtLegacyAPI: initialRef.current.EpusdtLegacyAPI,
       WaffoEnabled: initialRef.current.WaffoEnabled,
       WaffoSandbox: initialRef.current.WaffoSandbox,
       WaffoMerchantId: initialRef.current.WaffoMerchantId.trim(),
@@ -609,6 +665,76 @@ export function PaymentSettingsSection({
       normalizeJsonForComparison(initial.CreemProducts)
     ) {
       updates.push({ key: 'CreemProducts', value: sanitized.CreemProducts })
+    }
+
+    if (sanitized.EpusdtEnabled !== initial.EpusdtEnabled) {
+      updates.push({ key: 'EpusdtEnabled', value: sanitized.EpusdtEnabled })
+    }
+
+    if (sanitized.EpusdtURL !== initial.EpusdtURL) {
+      updates.push({ key: 'EpusdtURL', value: sanitized.EpusdtURL })
+    }
+
+    if (sanitized.EpusdtPid !== initial.EpusdtPid) {
+      updates.push({ key: 'EpusdtPid', value: sanitized.EpusdtPid })
+    }
+
+    if (
+      sanitized.EpusdtToken &&
+      sanitized.EpusdtToken !== initial.EpusdtToken
+    ) {
+      updates.push({ key: 'EpusdtToken', value: sanitized.EpusdtToken })
+    }
+
+    if (sanitized.EpusdtCurrency !== initial.EpusdtCurrency) {
+      updates.push({ key: 'EpusdtCurrency', value: sanitized.EpusdtCurrency })
+    }
+
+    if (sanitized.EpusdtTokenSymbol !== initial.EpusdtTokenSymbol) {
+      updates.push({
+        key: 'EpusdtTokenSymbol',
+        value: sanitized.EpusdtTokenSymbol,
+      })
+    }
+
+    if (sanitized.EpusdtNetwork !== initial.EpusdtNetwork) {
+      updates.push({ key: 'EpusdtNetwork', value: sanitized.EpusdtNetwork })
+    }
+
+    if (sanitized.EpusdtUnitPrice !== initial.EpusdtUnitPrice) {
+      updates.push({
+        key: 'EpusdtUnitPrice',
+        value: sanitized.EpusdtUnitPrice,
+      })
+    }
+
+    if (sanitized.EpusdtMinTopUp !== initial.EpusdtMinTopUp) {
+      updates.push({ key: 'EpusdtMinTopUp', value: sanitized.EpusdtMinTopUp })
+    }
+
+    if (sanitized.EpusdtMaxTopUp !== initial.EpusdtMaxTopUp) {
+      updates.push({ key: 'EpusdtMaxTopUp', value: sanitized.EpusdtMaxTopUp })
+    }
+
+    if (sanitized.EpusdtNotifyURL !== initial.EpusdtNotifyURL) {
+      updates.push({
+        key: 'EpusdtNotifyURL',
+        value: sanitized.EpusdtNotifyURL,
+      })
+    }
+
+    if (sanitized.EpusdtReturnURL !== initial.EpusdtReturnURL) {
+      updates.push({
+        key: 'EpusdtReturnURL',
+        value: sanitized.EpusdtReturnURL,
+      })
+    }
+
+    if (sanitized.EpusdtLegacyAPI !== initial.EpusdtLegacyAPI) {
+      updates.push({
+        key: 'EpusdtLegacyAPI',
+        value: sanitized.EpusdtLegacyAPI,
+      })
     }
 
     if (sanitized.WaffoEnabled !== initial.WaffoEnabled) {
@@ -1508,6 +1634,342 @@ export function PaymentSettingsSection({
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
+              )}
+            />
+          </div>
+
+          <Separator />
+
+          <div className='space-y-4'>
+            <div>
+              <h3 className='text-lg font-medium'>{t('USDT Gateway')}</h3>
+              <p className='text-muted-foreground text-sm'>
+                {t('Configuration for self-hosted EPUSDT payment integration')}
+              </p>
+            </div>
+
+            <Alert>
+              <AlertTitle>{t('Webhook Configuration:')}</AlertTitle>
+              <AlertDescription>
+                <ul className='list-inside list-disc'>
+                  <li>
+                    {t('Webhook URL:')}{' '}
+                    <code className='bg-muted rounded px-1 py-0.5 text-xs'>
+                      {'<ServerAddress>/api/user/epusdt/notify'}
+                    </code>
+                  </li>
+                  <li>
+                    {t('EPUSDT current API path:')}{' '}
+                    <code className='bg-muted rounded px-1 py-0.5 text-xs'>
+                      {'/payments/gmpay/v1/order/create-transaction'}
+                    </code>
+                  </li>
+                  <li>{t('Callback response body must be ok or success.')}</li>
+                </ul>
+              </AlertDescription>
+            </Alert>
+
+            <FormField
+              control={form.control}
+              name='EpusdtEnabled'
+              render={({ field }) => (
+                <SettingsSwitchItem>
+                  <SettingsSwitchContent>
+                    <FormLabel>{t('Enable USDT gateway')}</FormLabel>
+                    <FormDescription>
+                      {t('Allow users to recharge through self-hosted EPUSDT')}
+                    </FormDescription>
+                  </SettingsSwitchContent>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </SettingsSwitchItem>
+              )}
+            />
+
+            <div className='grid gap-6 md:grid-cols-3'>
+              <FormField
+                control={form.control}
+                name='EpusdtURL'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('EPUSDT endpoint')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('https://pay.example.com')}
+                        {...field}
+                        onChange={(event) => field.onChange(event.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('Base address of your EPUSDT service')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='EpusdtPid'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Merchant PID')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='1000'
+                        autoComplete='off'
+                        {...field}
+                        onChange={(event) => field.onChange(event.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Default merchant PID is 1000 for new EPUSDT installations'
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='EpusdtToken'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('API secret key')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='password'
+                        placeholder={t('Enter new key to update')}
+                        autoComplete='new-password'
+                        {...field}
+                        onChange={(event) => field.onChange(event.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Secret key used for EPUSDT request and webhook signatures'
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className='grid gap-6 md:grid-cols-3'>
+              <FormField
+                control={form.control}
+                name='EpusdtCurrency'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Currency')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='usd'
+                        autoComplete='off'
+                        {...field}
+                        onChange={(event) => field.onChange(event.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('Fiat currency submitted to EPUSDT, usually usd')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='EpusdtTokenSymbol'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Token')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='usdt'
+                        autoComplete='off'
+                        {...field}
+                        onChange={(event) => field.onChange(event.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('Crypto token submitted to EPUSDT')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='EpusdtNetwork'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Network')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='tron'
+                        autoComplete='off'
+                        {...field}
+                        onChange={(event) => field.onChange(event.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('Payment network submitted to EPUSDT')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className='grid gap-6 md:grid-cols-3'>
+              <FormField
+                control={form.control}
+                name='EpusdtUnitPrice'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('USDT unit price')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        step='0.0001'
+                        min={0}
+                        {...safeNumberFieldProps(field)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Multiplier applied to the displayed recharge amount before creating the USDT order'
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='EpusdtMinTopUp'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Minimum top-up (USDT)')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        step='0.01'
+                        min={0}
+                        {...safeNumberFieldProps(field)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('Minimum recharge amount for USDT payments')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='EpusdtMaxTopUp'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Maximum top-up (USDT)')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        step='0.01'
+                        min={0}
+                        {...safeNumberFieldProps(field)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Maximum recharge amount for USDT payments, 0 means no limit'
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className='grid gap-6 md:grid-cols-2'>
+              <FormField
+                control={form.control}
+                name='EpusdtNotifyURL'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Webhook override URL')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('https://gateway.example.com')}
+                        {...field}
+                        onChange={(event) => field.onChange(event.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Optional webhook URL override. Leave blank to use callback address'
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='EpusdtReturnURL'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Return URL')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('https://gateway.example.com')}
+                        {...field}
+                        onChange={(event) => field.onChange(event.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Optional return URL override. Leave blank to use wallet page'
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name='EpusdtLegacyAPI'
+              render={({ field }) => (
+                <SettingsSwitchItem>
+                  <SettingsSwitchContent>
+                    <FormLabel>{t('Legacy EPUSDT API')}</FormLabel>
+                    <FormDescription>
+                      {t(
+                        'Use the deprecated /api/v1/order/create-transaction endpoint for older EPUSDT deployments'
+                      )}
+                    </FormDescription>
+                  </SettingsSwitchContent>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </SettingsSwitchItem>
               )}
             />
           </div>

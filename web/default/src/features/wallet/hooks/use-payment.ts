@@ -20,14 +20,17 @@ import { useState, useCallback } from 'react'
 import i18next from 'i18next'
 import { toast } from 'sonner'
 import {
+  calculateEpusdtAmount,
   calculateAmount,
   calculateStripeAmount,
   calculateWaffoPancakeAmount,
+  requestEpusdtPayment,
   requestPayment,
   requestStripePayment,
   isApiSuccess,
 } from '../api'
 import {
+  isEpusdtPayment,
   isStripePayment,
   isWaffoPancakePayment,
   submitPaymentForm,
@@ -36,6 +39,41 @@ import {
 // ============================================================================
 // Payment Hook
 // ============================================================================
+
+function normalizeHttpPaymentUrl(
+  raw: string | undefined | null
+): string | null {
+  const trimmed = raw?.trim()
+  if (!trimmed) return null
+
+  try {
+    const base =
+      typeof window !== 'undefined' ? window.location.href : undefined
+    const url = base ? new URL(trimmed, base) : new URL(trimmed)
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return null
+    }
+    if (url.username || url.password) {
+      return null
+    }
+    return url.toString()
+  } catch {
+    return null
+  }
+}
+
+function getEpusdtPaymentUrl(data: unknown): string | null {
+  if (typeof data === 'string') {
+    return normalizeHttpPaymentUrl(data)
+  }
+
+  if (!data || typeof data !== 'object') {
+    return null
+  }
+
+  const url = (data as { payment_url?: unknown }).payment_url
+  return typeof url === 'string' ? normalizeHttpPaymentUrl(url) : null
+}
 
 export function usePayment() {
   const [amount, setAmount] = useState<number>(0)
@@ -50,11 +88,14 @@ export function usePayment() {
 
         const isStripe = isStripePayment(paymentType)
         const isPancake = isWaffoPancakePayment(paymentType)
+        const isUsdt = isEpusdtPayment(paymentType)
         const response = isStripe
           ? await calculateStripeAmount({ amount: topupAmount })
           : isPancake
             ? await calculateWaffoPancakeAmount({ amount: topupAmount })
-            : await calculateAmount({ amount: topupAmount })
+            : isUsdt
+              ? await calculateEpusdtAmount({ amount: topupAmount })
+              : await calculateAmount({ amount: topupAmount })
 
         if (isApiSuccess(response) && response.data) {
           const calculatedAmount = parseFloat(response.data)
@@ -82,32 +123,65 @@ export function usePayment() {
         setProcessing(true)
 
         const isStripe = isStripePayment(paymentType)
+        const isUsdt = isEpusdtPayment(paymentType)
         const amount = Math.floor(topupAmount)
 
-        const response = isStripe
-          ? await requestStripePayment({
-              amount,
-              payment_method: 'stripe',
-            })
-          : await requestPayment({
-              amount,
-              payment_method: paymentType,
-            })
+        if (isStripe) {
+          const response = await requestStripePayment({
+            amount,
+            payment_method: 'stripe',
+          })
+
+          if (!isApiSuccess(response)) {
+            toast.error(response.message || i18next.t('Payment request failed'))
+            return false
+          }
+
+          if (response.data?.pay_link) {
+            window.open(response.data.pay_link, '_blank')
+            toast.success(i18next.t('Redirecting to payment page...'))
+            return true
+          }
+
+          return false
+        }
+
+        if (isUsdt) {
+          const response = await requestEpusdtPayment({
+            amount,
+            payment_method: 'usdt',
+          })
+
+          if (!isApiSuccess(response)) {
+            toast.error(response.message || i18next.t('Payment request failed'))
+            return false
+          }
+
+          const paymentUrl = getEpusdtPaymentUrl(response.data)
+          if (!paymentUrl) {
+            toast.error(
+              response.message || i18next.t('Payment URL is unavailable')
+            )
+            return false
+          }
+
+          window.location.href = paymentUrl
+          toast.success(i18next.t('Redirecting to payment page...'))
+          return true
+        }
+
+        const response = await requestPayment({
+          amount,
+          payment_method: paymentType,
+        })
 
         if (!isApiSuccess(response)) {
           toast.error(response.message || i18next.t('Payment request failed'))
           return false
         }
 
-        // Handle Stripe payment
-        if (isStripe && response.data?.pay_link) {
-          window.open(response.data.pay_link as string, '_blank')
-          toast.success(i18next.t('Redirecting to payment page...'))
-          return true
-        }
-
         // Handle non-Stripe payment
-        if (!isStripe && response.data) {
+        if (response.data) {
           const url = (response as unknown as { url?: string }).url
           if (url) {
             submitPaymentForm(url, response.data)

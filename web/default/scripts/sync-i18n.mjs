@@ -90,6 +90,7 @@ const BRAND_AND_LITERAL_KEYS = new Set([
   'TTFT P99',
   'Uptime Kuma',
   'Uptime Kuma URL',
+  'USDT (TRC20)',
   'Vertex AI',
   'VolcEngine',
   'Waffo Pancake Dashboard',

@@ -1,7 +1,7 @@
 services:
   new-api:
     build: .
-    image: 937bb/new-api:homepage-seo-refresh
+    image: 937bb/new-api:rc48-modelport-20261105
     container_name: new-api
     restart: always
     network_mode: host

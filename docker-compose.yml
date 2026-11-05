@@ -1,26 +1,18 @@
 services:
   new-api:
-    image: calciumion/new-api:latest
+    build: .
+    image: 937bb/new-api:homepage-seo-refresh
     container_name: new-api
     restart: always
-    command: --log-dir /app/logs
     network_mode: host
+    command: --log-dir /app/logs
+    env_file:
+      - .env
     volumes:
       - ./data:/data
       - ./logs:/app/logs
-    env_file:
-      - .env
-    environment:
-      - TZ=${TZ:-Asia/Shanghai}
-      - PORT=${PORT:-3000}
-      - SQL_DSN=${SQL_DSN}
-      - REDIS_CONN_STRING=${REDIS_CONN_STRING}
-      - SESSION_SECRET=${SESSION_SECRET}
-      - ERROR_LOG_ENABLED=${ERROR_LOG_ENABLED:-true}
-      - BATCH_UPDATE_ENABLED=${BATCH_UPDATE_ENABLED:-true}
-      - NODE_NAME=${NODE_NAME:-new-api-node-1}
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:${PORT:-3000}/api/status | grep -o '\"success\":\\s*true' || exit 1"]
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:3000/api/status | grep -o '\"success\":\\s*true' || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

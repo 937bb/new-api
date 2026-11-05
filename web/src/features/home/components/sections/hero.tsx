@@ -179,14 +179,16 @@ export function Hero(props: HeroProps) {
                     <LockKeyhole className='mr-2 size-4' />
                     {t('Sign in')}
                   </Button>
-                  <Button
-                    variant='outline'
-                    className='border-border/60 bg-background/70 text-foreground hover:bg-muted/70 group h-12 rounded-full px-6 text-sm font-bold backdrop-blur-xl dark:border-white/14 dark:bg-white/[0.08] dark:text-white dark:hover:border-white/24 dark:hover:bg-white/[0.14] dark:hover:text-white'
-                    render={<Link to='/sign-up' />}
-                  >
-                    {t('Create account')}
-                    <ArrowRight className='ml-2 size-4 transition-transform group-hover:translate-x-0.5' />
-                  </Button>
+                  {status?.register_enabled === true && (
+                    <Button
+                      variant='outline'
+                      className='border-border/60 bg-background/70 text-foreground hover:bg-muted/70 group h-12 rounded-full px-6 text-sm font-bold backdrop-blur-xl dark:border-white/14 dark:bg-white/[0.08] dark:text-white dark:hover:border-white/24 dark:hover:bg-white/[0.14] dark:hover:text-white'
+                      render={<Link to='/sign-up' />}
+                    >
+                      {t('Create account')}
+                      <ArrowRight className='ml-2 size-4 transition-transform group-hover:translate-x-0.5' />
+                    </Button>
+                  )}
                 </>
               )}
             </div>
